@@ -86,7 +86,7 @@ int main(int ac, char **av, char **env)
             print_help();
     else {
         my_putstr("Bad arguments\n");
-        my_putstr("Try : './my_hunter -h' for help");
+        my_putstr("Try : './my_hunter -h' for help.\n");
         return 84;
     }
     return 0;
