@@ -28,6 +28,7 @@ static int create_sprite_background(char const **texture_filepath,
             sprite->Menu = sprite_temp;
         if (*i == 1)
             sprite->Game = sprite_temp;
+        sprite->texture[*i] = texture;
     }
     return 0;
 }
@@ -49,6 +50,7 @@ static int create_sprite_little(char const **texture_filepath,
         scaleY = (float)125 / imageSize.y;
         sfSprite_setScale(sprite_temp, (sfVector2f){scaleX, scaleY});
         sprite->Esc = sprite_temp;
+        sprite->texture[*i] = texture;
     }
     return 0;
 }
@@ -74,6 +76,7 @@ static int create_play_sprite(char const **texture_filepath,
             sprite->play = sprite_temp;
         if (*i == 7)
             sprite->play_colored = sprite_temp;
+        sprite->texture[*i] = texture;
     }
 }
 
@@ -96,6 +99,7 @@ static int create_title_sprite(char const **texture_filepath,
         sfSprite_setScale(sprite_temp, (sfVector2f){scaleX, scaleY});
         sfSprite_setPosition(sprite_temp, position);
         sprite->Title = sprite_temp;
+        sprite->texture[*i] = texture;
     }
 }
 
@@ -116,6 +120,7 @@ static int create_sprite_cursor(char const **texture_filepath,
         scaleY = (float)50 / imageSize.y;
         sfSprite_setScale(sprite_temp, (sfVector2f){scaleX, scaleY});
         sprite->crosshair = sprite_temp;
+        sprite->texture[*i] = texture;
     }
     return 0;
 }
@@ -133,11 +138,11 @@ sprite_t *create_sprite(char const **texture_filepath)
         texture = sfTexture_createFromFile(texture_filepath[i], NULL);
         sfSprite_setTexture(sprite_temp, texture, sfTrue);
         sprite->duck = sprite_temp;
+        sprite->texture[i] = texture;
     }
     create_sprite_little(texture_filepath, sprite, sprite_temp, &i);
     create_sprite_cursor(texture_filepath, sprite, sprite_temp, &i);
     create_title_sprite(texture_filepath, sprite, sprite_temp, &i);
     create_play_sprite(texture_filepath, sprite, sprite_temp, &i);
-    sprite->textures = texture_filepath;
     return sprite;
 }

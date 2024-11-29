@@ -34,7 +34,7 @@ typedef struct sprite_s {
     sfSprite *Title;
     sfSprite *play;
     sfSprite *play_colored;
-    char const **textures;
+    sfTexture *texture[8];
 } sprite_t;
 
 typedef struct anim_s {

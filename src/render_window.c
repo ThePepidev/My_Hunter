@@ -7,8 +7,10 @@
 
 #include "../include/my_hunter.h"
 
-static void destroy_all_ducks(keep_t *params)
+static void destroy_loop(keep_t *params, sprite_t *sprite)
 {
+    for (int i = 0; i < 8; i++)
+        sfTexture_destroy(sprite->texture[i]);
     for (int i = 0; i < 10; i++)
         sfSprite_destroy(params->duck->duck_sprite[i]);
 }
@@ -26,7 +28,7 @@ static void destroy_and_free(sfRenderWindow *window,
     sfSprite_destroy(sprite_t->duck);
     sfRectangleShape_destroy(params->rec->Escape);
     sfRectangleShape_destroy(params->rec->Play);
-    destroy_all_ducks(params);
+    destroy_loop(params, sprite_t);
     sfRenderWindow_destroy(window);
     free(params->rec);
     free(params->bool_);
