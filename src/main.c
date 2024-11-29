@@ -61,8 +61,24 @@ static void print_help(void)
     my_putstr("Enjoy !\n");
 }
 
-int main(int ac, char **av)
+static int is_running_in_tty(char **env)
 {
+    int i = 0;
+
+    if (!env)
+        return 1;
+    while (env[i]) {
+        if (my_strncmp(env[i], "DISPLAY=", 8) == 0)
+            return 0;
+        i++;
+    }
+    return 1;
+}
+
+int main(int ac, char **av, char **env)
+{
+    if (is_running_in_tty(env) == 1)
+        return 84;
     if (ac == 1)
         return my_hunter();
     if (ac == 2)
