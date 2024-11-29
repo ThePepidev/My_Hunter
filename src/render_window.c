@@ -7,8 +7,14 @@
 
 #include "../include/my_hunter.h"
 
+static void destroy_all_ducks(keep_t *params)
+{
+    for (int i = 0; i < 10; i++)
+        sfSprite_destroy(params->duck->duck_sprite[i]);
+}
+
 static void destroy_and_free(sfRenderWindow *window,
-    sprite_t *sprite_t, keep_t *s, anim_t *esc)
+    sprite_t *sprite_t, keep_t *params, anim_t *esc)
 {
     sfSprite_destroy(sprite_t->Esc);
     sfSprite_destroy(sprite_t->Menu);
@@ -18,81 +24,122 @@ static void destroy_and_free(sfRenderWindow *window,
     sfSprite_destroy(sprite_t->play_colored);
     sfSprite_destroy(sprite_t->Game);
     sfSprite_destroy(sprite_t->duck);
-    sfRectangleShape_destroy(s->r->Escape);
-    sfRectangleShape_destroy(s->r->Play);
+    sfRectangleShape_destroy(params->rec->Escape);
+    sfRectangleShape_destroy(params->rec->Play);
+    destroy_all_ducks(params);
     sfRenderWindow_destroy(window);
-    free(s->r);
-    free(s->b);
+    free(params->rec);
+    free(params->bool_);
+    free(params->duck);
     free(esc);
-    free(s);
+    free(params);
 }
 
-static void display_window(sfRenderWindow *window, keep_t *s)
+static void display_window(sfRenderWindow *window, keep_t *params)
 {
     sfRenderWindow_clear(window, sfBlack);
-    if (s->b->Menu) {
-        sfRenderWindow_drawSprite(window, s->s->Menu, NULL);
-        sfRenderWindow_drawSprite(window, s->s->Title, NULL);
-        sfRenderWindow_drawSprite(window, s->s->play, NULL);
-        if (s->b->colored_play)
-            sfRenderWindow_drawSprite(window, s->s->play_colored, NULL);
-        sfRenderWindow_drawRectangleShape(window, s->r->Play, NULL);
+    if (params->bool_->Menu) {
+        sfRenderWindow_drawSprite(window, params->sprite->Menu, NULL);
+        sfRenderWindow_drawSprite(window, params->sprite->Title, NULL);
+        sfRenderWindow_drawSprite(window, params->sprite->play, NULL);
+        if (params->bool_->colored_play)
+            sfRenderWindow_drawSprite(window,
+                params->sprite->play_colored, NULL);
+        sfRenderWindow_drawRectangleShape(window, params->rec->Play, NULL);
     } else {
-        sfRenderWindow_drawSprite(window, s->s->Game, NULL);
+        sfRenderWindow_drawSprite(window, params->sprite->Game, NULL);
+        draw_duck_sprite(window, params);
     }
-    sfRenderWindow_drawSprite(window, s->s->Esc, NULL);
-    sfRenderWindow_drawRectangleShape(window, s->r->Escape, NULL);
-    sfRenderWindow_drawSprite(window, s->s->crosshair, NULL);
+    sfRenderWindow_drawSprite(window, params->sprite->Esc, NULL);
+    sfRenderWindow_drawRectangleShape(window, params->rec->Escape, NULL);
+    sfRenderWindow_drawSprite(window, params->sprite->crosshair, NULL);
     sfRenderWindow_display(window);
 }
 
-static void menu_loop(keep_t *s, sfRenderWindow *window)
+static void menu_loop(keep_t *params, sfRenderWindow *window)
 {
-    if (s->b->Menu)
+    if (params->bool_->Menu)
         sfRenderWindow_close(window);
     else
-        s->b->Menu = true;
+        params->bool_->Menu = true;
 }
 
-static void handle_event(sfRenderWindow *window, sfEvent event, keep_t *s)
+static void handle_event(sfRenderWindow *window, keep_t *params)
 {
+    sfEvent event;
+
     while (sfRenderWindow_pollEvent(window, &event)) {
         if (event.type == sfEvtClosed)
             sfRenderWindow_close(window);
-        if (click_esc(window, s->r, &event) == 1)
+        if (click_esc(window, params->rec, &event) == 1)
             sfRenderWindow_close(window);
-        if (click_play(window, s->r, &event) == 1)
-            s->b->Menu = false;
-        if (event.type == sfEvtKeyPressed && event.key.code == sfKeyEscape) {
-            menu_loop(s, window);
-        }
+        if (click_play(window, params->rec, &event) == 1)
+            params->bool_->Menu = false;
+        if (event.type == sfEvtKeyPressed && event.key.code == sfKeyEscape)
+            menu_loop(params, window);
+        if (click_duck(window, params, &event) == 0)
+            continue;
     }
-    if (mouse_on_play(window, s->r) == 1)
-        s->b->colored_play = true;
+    if (mouse_on_play(window, params->rec) == 1)
+        params->bool_->colored_play = true;
     else
-        s->b->colored_play = false;
-    display_window(window, s);
+        params->bool_->colored_play = false;
+    display_window(window, params);
+}
+
+static sfRenderWindow *init_window(window_t *window_t)
+{
+    sfRenderWindow *window = sfRenderWindow_create(window_t->mode,
+        window_t->title, window_t->style, window_t->settings);
+
+    sfRenderWindow_setFramerateLimit(window, 60);
+    sfWindow_setMouseCursorVisible((sfWindow*)window, sfFalse);
+    return window;
+}
+
+static game_clocks_t init_game_clocks(void)
+{
+    game_clocks_t clocks = {
+        .mainClock = sfClock_create(),
+        .animationClock = sfClock_create(),
+        .currentFrame = 0
+    };
+
+    return clocks;
+}
+
+static void update_game_state(sfRenderWindow *window, keep_t *params,
+    game_clocks_t *clocks)
+{
+    update_duck_count(params);
+    updateduckanimation(params, &clocks->currentFrame, clocks->animationClock);
+    update_duck_positions(window, params,
+        sfTime_asSeconds(sfClock_restart(clocks->mainClock)));
+}
+
+static void update_sprites(sfRenderWindow *window, sprite_t *sprite_t,
+    anim_t *esc_animation)
+{
+    sfVector2f cursorPos = getmousepos(window);
+
+    set_esc_animation(esc_animation, sprite_t->Esc);
+    sfSprite_setPosition(sprite_t->crosshair, cursorPos);
+    sfSprite_setPosition(sprite_t->Esc, esc_animation->position);
 }
 
 void render_window(window_t *window_t, sprite_t *sprite_t)
 {
-    sfRenderWindow *window;
-    sfVector2f cursorPos;
+    sfRenderWindow *window = init_window(window_t);
+    game_clocks_t clocks = init_game_clocks();
     anim_t *esc_animation = create_animation(30.0f, 1, sfClock_create());
-    keep_t *s = keep_struct(sprite_t,
-        create_all_rectangle(sprite_t), keep_bool());
-    sfEvent event;
+    keep_t *params = init_game_params(sprite_t);
 
-    window = sfRenderWindow_create(window_t->mode, window_t->title,
-        window_t->style, window_t->settings);
-    sfRenderWindow_setFramerateLimit(window, 60);
-    sfWindow_setMouseCursorVisible((sfWindow*)window, sfFalse);
     while (sfRenderWindow_isOpen(window)) {
-        handle_event(window, event, s);
-        set_esc_animation(esc_animation, sprite_t->Esc);
-        cursorPos = getmousepos(window);
-        sfSprite_setPosition(sprite_t->crosshair, cursorPos);
-        sfSprite_setPosition(sprite_t->Esc, esc_animation->position);
+        update_game_state(window, params, &clocks);
+        handle_event(window, params);
+        update_sprites(window, sprite_t, esc_animation);
     }
-    destroy_and_free(window, sprite_t, s, esc_animation);
+    destroy_and_free(window, sprite_t, params, esc_animation);
+    sfClock_destroy(clocks.mainClock);
+    sfClock_destroy(clocks.animationClock);
 }

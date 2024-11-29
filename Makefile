@@ -10,8 +10,9 @@ SRC	= 	src/main.c 					\
 		src/animation.c 			\
 		src/button.c 				\
 		src/create_sprite.c 		\
-		src/keep_bool.c 			\
-		src/keep_all.c
+		src/init_struct_supp.c 		\
+		src/keep_all.c 				\
+		src/duck.c
 
 OBJ	=	$(SRC:.c=.o)
 
