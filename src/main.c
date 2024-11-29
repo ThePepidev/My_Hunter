@@ -6,12 +6,15 @@
 */
 
 #include "../include/my_hunter.h"
+#include "../include/my.h"
 
 static window_t *create_window_struct(sfVideoMode mode, const char *title,
     sfUint32 style, const sfContextSettings *settings)
 {
     window_t *window = malloc(sizeof(window_t));
 
+    if (!window)
+        return NULL;
     window->mode = mode;
     window->title = title;
     window->style = style;
@@ -19,7 +22,7 @@ static window_t *create_window_struct(sfVideoMode mode, const char *title,
     return window;
 }
 
-int main(int ac, char **av)
+static int my_hunter(void)
 {
     sprite_t *sprite;
     window_t *window;
@@ -40,4 +43,35 @@ int main(int ac, char **av)
     sfMusic_destroy(music);
     free(sprite);
     free(window);
+    return 0;
+}
+
+static void print_help(void)
+{
+    my_putstr("My Hunter Game - Help Guide :\n\n");
+    my_putstr("Usage:\n\n    './my_hunter' ");
+    my_putstr("[without options] //for gameplay\n");
+    my_putstr("or\n    './my_hunter -h' //for Help\n\n");
+    my_putstr("Gameplay:\n\n");
+    my_putstr("    press play button to quit the menu\n");
+    my_putstr("    press esc in game to access to the Menu again");
+    my_putstr(" and press it again to quit the game\n");
+    my_putstr("    click on duck to kill them and raise your score\n");
+    my_putstr("    if 3 ducks reach the screen border you loose\n\n");
+    my_putstr("Enjoy !\n");
+}
+
+int main(int ac, char **av)
+{
+    if (ac == 1)
+        return my_hunter();
+    if (ac == 2)
+        if (my_strcmp(av[1], "-h") == 0)
+            print_help();
+    else {
+        my_putstr("Bad arguments\n");
+        my_putstr("Try : './my_hunter -h' for help");
+        return 84;
+    }
+    return 0;
 }
