@@ -49,6 +49,17 @@ typedef struct clickable_s {
     sfRectangleShape *Play;
 } clickable_t;
 
+typedef struct bool_s {
+    bool colored_play;
+    bool Menu;
+} bool_t;
+
+typedef struct keep_s {
+    sprite_t *s;
+    clickable_t *r;
+    bool_t *b;
+} keep_t;
+
 void render_window(window_t *window_t, sprite_t *sprite_t);
 void set_esc_animation(anim_t *esc_animation, sfSprite *sprite);
 anim_t *create_animation(float speed, int direction, sfClock *clock);
@@ -57,5 +68,8 @@ int click_esc(sfRenderWindow *window, clickable_t *rec, sfEvent *event);
 clickable_t *create_all_rectangle(sprite_t *sprite);
 sprite_t *create_sprite(char const **texture_filepath);
 int mouse_on_play(sfRenderWindow *window, clickable_t *rec);
+bool_t *keep_bool(void);
+int click_play(sfRenderWindow *window, clickable_t *rec, sfEvent *event);
+keep_t *keep_struct(sprite_t *sprite, clickable_t *rec, bool_t *bool_s);
 
 #endif
