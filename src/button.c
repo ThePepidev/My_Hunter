@@ -13,7 +13,8 @@ int click_esc(sfRenderWindow *window, clickable_t *rec, sfEvent *event)
     sfVector2f mousePos = getmousepos(window);
 
     if (sfFloatRect_contains(&esc_size, mousePos.x, mousePos.y)
-        && event->mouseButton.button == sfMouseLeft)
+        && event->type == sfEvtMouseButtonPressed &&
+        event->key.code == sfMouseLeft)
         return 1;
     return 0;
 }

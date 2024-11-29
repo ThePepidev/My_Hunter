@@ -74,7 +74,7 @@ static void handle_event(sfRenderWindow *window, keep_t *params)
         if (event.type == sfEvtClosed)
             sfRenderWindow_close(window);
         if (click_esc(window, params->rec, &event) == 1)
-            sfRenderWindow_close(window);
+            menu_loop(params, window);
         if (click_play(window, params->rec, &event) == 1) {
             params->bool_->Menu = false;
             params->bool_->Game_over = false;
