@@ -40,7 +40,7 @@ static void display_window(sfRenderWindow *window, keep_t *params)
     sfRenderWindow_clear(window, sfBlack);
     if (params->bool_->Menu) {
         sfRenderWindow_drawSprite(window, params->sprite->Menu, NULL);
-        sfRenderWindow_drawSprite(window, params->sprite->Title, NULL);
+        display_text(window, params);
         sfRenderWindow_drawSprite(window, params->sprite->play, NULL);
         if (params->bool_->colored_play)
             sfRenderWindow_drawSprite(window,
@@ -73,12 +73,13 @@ static void handle_event(sfRenderWindow *window, keep_t *params)
             sfRenderWindow_close(window);
         if (click_esc(window, params->rec, &event) == 1)
             sfRenderWindow_close(window);
-        if (click_play(window, params->rec, &event) == 1)
+        if (click_play(window, params->rec, &event) == 1) {
             params->bool_->Menu = false;
+            params->bool_->Game_over = false;
+        }
         if (event.type == sfEvtKeyPressed && event.key.code == sfKeyEscape)
             menu_loop(params, window);
-        if (click_duck(window, params, &event) == 0)
-            continue;
+        click_duck(window, params, &event);
     }
     if (mouse_on_play(window, params->rec) == 1)
         params->bool_->colored_play = true;
@@ -134,6 +135,7 @@ void render_window(window_t *window_t, sprite_t *sprite_t)
     anim_t *esc_animation = create_animation(30.0f, 1, sfClock_create());
     keep_t *params = init_game_params(sprite_t);
 
+    srand(time(NULL));
     while (sfRenderWindow_isOpen(window)) {
         update_game_state(window, params, &clocks);
         handle_event(window, params);

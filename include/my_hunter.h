@@ -64,6 +64,7 @@ typedef struct duck_s {
     float duckY[10];
     sfSprite *duck_sprite[10];
     int life_point;
+    int score;
 } duck_t;
 
 typedef struct keep_s {
@@ -99,5 +100,7 @@ void updateduckanimation(keep_t *params, int *currentFrame, sfClock *clock);
 int click_duck(sfRenderWindow *window, keep_t *params, sfEvent *event);
 void draw_duck_sprite(sfRenderWindow *window, keep_t *params);
 keep_t *init_game_params(sprite_t *sprite_t);
+sfText *create_text(keep_t *params);
+void display_text(sfRenderWindow *window, keep_t *params);
 
 #endif

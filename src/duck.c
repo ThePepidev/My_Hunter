@@ -38,11 +38,22 @@ void updateduckanimation(keep_t *params, int *currentFrame, sfClock *clock)
     }
 }
 
+static void reset_duck(keep_t *params)
+{
+    for (int i = 0; i < 10; i++) {
+        params->duck->duckX[i] = 0.0f;
+        params->duck->duckY[i] = rand() % 1010;
+    }
+}
+
 void update_duck_count(keep_t *params)
 {
-    if (params->bool_->Menu == true)
+    if (params->bool_->Menu == true) {
         params->duck->duck_nb = 0;
-    if (rand() % 100 == 0 && params->bool_->Menu == false) {
+        params->duck->life_point = 3;
+        reset_duck(params);
+    }
+    if (rand() % 100 < 1 && params->bool_->Menu == false) {
         if (params->duck->duck_nb < 10) {
             params->duck->duck_nb++;
         }
@@ -64,8 +75,10 @@ void update_duck_positions(sfRenderWindow *window,
             duckPosition.y = rand() % 1010;
             params->duck->life_point--;
         }
-        if (params->duck->life_point == 0)
-            sfRenderWindow_close(window);
+        if (params->duck->life_point == 0) {
+            params->bool_->Game_over = true;
+            params->bool_->Menu = true;
+        }
         params->duck->duckX[i] = duckPosition.x;
         params->duck->duckY[i] = duckPosition.y;
     }
@@ -80,6 +93,7 @@ void draw_duck_sprite(sfRenderWindow *window, keep_t *params)
             params->duck->duckX[i] = 0.00f;
             params->duck->duckY[i] = rand() % 1010;
             params->bool_->Kill_duck[i] = false;
+            params->duck->score++;
         }
         duckPosition = (sfVector2f){params->duck->duckX[i],
             params->duck->duckY[i]};

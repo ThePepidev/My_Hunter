@@ -17,6 +17,7 @@ bool_t *keep_bool(void)
 
     temp->colored_play = colored;
     temp->Menu = Menu;
+    temp->Game_over = false;
     for (int i = 0; i < 10; i++)
         temp->Kill_duck[i] = false;
     return temp;
@@ -28,6 +29,7 @@ duck_t *create_duck(sprite_t *sprite)
 
     duck->duck_nb = 0;
     duck->life_point = 3;
+    duck->score = 0;
     srand(time(NULL));
     for (int i = 0; i < 10; i++) {
         duck->duck_sprite[i] = sfSprite_copy(sprite->duck);

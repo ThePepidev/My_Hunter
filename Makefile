@@ -12,7 +12,8 @@ SRC	= 	src/main.c 					\
 		src/create_sprite.c 		\
 		src/init_struct_supp.c 		\
 		src/keep_all.c 				\
-		src/duck.c
+		src/duck.c 					\
+		src/text.c
 
 OBJ	=	$(SRC:.c=.o)
 
