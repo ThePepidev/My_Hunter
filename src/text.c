@@ -69,9 +69,15 @@ sfText *create_text(keep_t *params)
 void display_text(sfRenderWindow *window, keep_t *params)
 {
     sfText *score = create_text(params);
+    sfText *shadow = sfText_copy(score);
 
+    sfText_setCharacterSize(shadow, 140);
+    sfText_setPosition(score, (sfVector2f){570, 340});
+    sfText_setFillColor(shadow, sfBlack);
     if (!params->bool_->Game_over)
         sfRenderWindow_drawSprite(window, params->sprite->Title, NULL);
-    else
+    else {
+        sfRenderWindow_drawText(window, shadow, NULL);
         sfRenderWindow_drawText(window, score, NULL);
+    }
 }
