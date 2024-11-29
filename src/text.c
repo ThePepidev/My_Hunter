@@ -80,4 +80,6 @@ void display_text(sfRenderWindow *window, keep_t *params)
         sfRenderWindow_drawText(window, shadow, NULL);
         sfRenderWindow_drawText(window, score, NULL);
     }
+    sfText_destroy(score);
+    sfText_destroy(shadow);
 }
