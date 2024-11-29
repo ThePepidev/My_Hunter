@@ -6,13 +6,15 @@
 ##
 
 SRC	= 	src/main.c 					\
-		src/render_window.c
+		src/render_window.c 		\
+		src/animation.c 			\
+		src/button.c 				\
 
 OBJ	=	$(SRC:.c=.o)
 
 NAME =	my_hunter
 
-CSFML = -lcsfml-graphics -lcsfml-audio
+CSFML = -lcsfml-graphics -lcsfml-audio -lcsfml-window -lcsfml-system
 
 WARNING = -Wall -Wextra
 
